@@ -11,8 +11,7 @@ type ExecutionResponse =
   | { status: "ok"; value: unknown }
   | { status: "error"; error: string };
 
-const serializeRequest = (request: ExecutionRequest) =>
-  Buffer.from(JSON.stringify(request), "utf8").toString("base64");
+const serializeRequest = (request: ExecutionRequest) => JSON.stringify(request);
 
 const deserializeResponse = (raw: string): ExecutionResponse | null => {
   try {
@@ -29,10 +28,8 @@ const run = async () => {
   // by default network requests should fail and any FS writes will fail.
   const request: ExecutionRequest = {
     code: `
-      (() => {
-        const nums = [1, 2, 3, 4];
-        return nums.map((value) => value * value).reduce((acc, curr) => acc + curr);
-      })()
+    const nums = [1, 2, 3, 4];
+    return nums.map((value) => value * value).reduce((acc, curr) => acc + curr);
     `,
   };
 
@@ -70,6 +67,7 @@ const run = async () => {
 
     const trimmedStdout = stdout.trim();
     if (trimmedStdout.length > 0) {
+      console.log("Child raw output:", trimmedStdout);
       const response = deserializeResponse(trimmedStdout);
 
       if (response) {

@@ -1,13 +1,3 @@
-const decodePayload = (input) => {
-  try {
-    return JSON.parse(Buffer.from(input, "base64").toString("utf8"));
-  } catch (error) {
-    throw new Error(
-      `Failed to decode execution payload: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
-};
-
 const runUserCode = async (code) => {
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   const executor = new AsyncFunction(`
@@ -19,6 +9,16 @@ const runUserCode = async (code) => {
   `);
 
   return executor();
+};
+
+const decodePayload = (input) => {
+  try {
+    return JSON.parse(input);
+  } catch (error) {
+    throw new Error(
+      `Failed to decode execution payload: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
 
 const main = async () => {
